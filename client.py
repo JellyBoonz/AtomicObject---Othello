@@ -20,18 +20,20 @@ def check_surroundings(board, row, col, opponent, score):
           continue
         
         if board[i][j] == opponent:
-          
-          temp_max = line_check(board, i, j, row, col, opponent, valid_moves, score)
+          temp_max = 0
+          line_check(board, i, j, row, col, opponent, valid_moves, score)
 
-        #Check all the valid moves for best one
-        for k in valid_moves:
+      #Check all the valid moves for best one
+      for k in valid_moves:
+        if temp_max is not None:
           if k > temp_max:
             temp_max = k
 
-        if temp_max > score:
-          score = temp_max
-          best_move = valid_moves[score]
-    valid_moves.clear()
+  if temp_max is not None:
+    if temp_max > score:
+      score = temp_max
+      best_move = valid_moves[score]
+  valid_moves.clear()
 
   return {score: best_move}
 
@@ -72,29 +74,17 @@ def line_check(board, next_row, next_col, row, col, opponent, valid_moves, total
     # if there is an available spot in a higher
     # tactical position
     if(board[next_row][next_col] == 0):
-
-      augment = 0
-      for i in range(next_row - 1, next_row + 2):
-        for j in range(next_col - 1, next_col + 2):
-          if i >= 0 and i < 8 and j >= 0 and j < 8:
-            if(board[i][j] == opponent):
-              augment += 2
-      total += augment
-
-      # if(next_row == 7) or (next_row == 0) or (next_col == 7) or (next_col == 0):
-      #   total += 2
-      if(next_row <= 2) or (next_col <= 2):
-        total += 3
+      #Weight four corners of the board high
       if (next_row == next_col) or (abs(next_row - next_col) == 7):
         if next_row == 7 or next_col == 7:
           total += 100
         total += 2
-      if abs(next_row - next_col) == 1 or abs(next_row - next_col) == 6:
+      if abs(next_row - next_col) == 1 or abs(next_row - next_col) == 6: #Weighing position next to four corners low
         total = 1
       valid_moves.update({total: [next_row, next_col]})
       return total
     else:
-      return
+      return total
 
 def get_move(player, board):
   #Finding out who's turn it is
@@ -133,8 +123,8 @@ def prepare_response(move):
 
 if __name__ == "__main__":
   # board = [[0 for x in range(8)] for x in range(8)]
-  # board =  [[0, 0, 0, 2, 1, 0, 0, 2], [0, 0, 0, 0, 1, 0, 2, 0], [0, 2, 2, 2, 1, 2, 0, 0], [0, 0, 2, 2, 1, 0, 0, 0], [1, 2, 1, 2, 2, 0, 0, 0], [2, 0, 2, 2, 2, 2, 0, 0], 
-  # [0, 2, 1, 0, 1, 0, 0, 0], [0, 1, 1, 1, 0, 1, 0, 0]]
+  # board =  [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 2, 0, 0, 0], [0, 0, 0, 2, 1, 0, 0, 0], 
+  # [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]]
 
 
 
